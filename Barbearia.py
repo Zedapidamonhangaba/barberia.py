@@ -1,3 +1,5 @@
+import json
+
 class Barbearia:
     def __init__(self):
         self.cadastros = []
@@ -5,8 +7,10 @@ class Barbearia:
             'degrade': 30,
             'social': 25,
             'barba': 20,
-            'sobrancelha': 5
+            'sobrancelha': 5,
+            'degrade + sobrancelha': 35
         }
+        self.carregar_cadastros()
 
     def adicionar_cliente(self, nome, hora, corte):
         corte = corte.lower()  # Transforma a entrada para minúsculas
@@ -14,6 +18,7 @@ class Barbearia:
             cliente = {'nome': nome, 'hora': hora, 'corte': corte.capitalize(), 'preco': self.precos[corte]}
             self.cadastros.append(cliente)
             print(f"Cliente {nome} cadastrado com sucesso!")
+            self.salvar_cadastros()
         else:
             print("Corte inválido!")
 
@@ -23,6 +28,18 @@ class Barbearia:
             return
         for cliente in self.cadastros:
             print(f"Nome: {cliente['nome']}, Hora: {cliente['hora']}, Corte: {cliente['corte']}, Preço: R${cliente['preco']}")
+            print()  # Adiciona uma linha entre cada cadastro
+
+    def salvar_cadastros(self):
+        with open('cadastros.json', 'w') as f:
+            json.dump(self.cadastros, f, indent=4)
+
+    def carregar_cadastros(self):
+        try:
+            with open('cadastros.json', 'r') as f:
+                self.cadastros = json.load(f)
+        except FileNotFoundError:
+            self.cadastros = []
 
 def menu():
     barbearia = Barbearia()
@@ -36,7 +53,7 @@ def menu():
         if opcao == '1':
             nome = input("Nome do Cliente: ")
             hora = input("Hora Desejada: ")
-            corte = input("Tipo de Corte (Degrade, Social, Barba, Sobrancelha): ")
+            corte = input("Tipo de Corte (Degrade, Social, Barba, Sobrancelha, Degrade + Sobrancelha): ")
             barbearia.adicionar_cliente(nome, hora, corte)
         elif opcao == '2':
             barbearia.mostrar_cadastros()
